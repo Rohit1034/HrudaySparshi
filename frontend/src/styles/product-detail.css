@@ -1,0 +1,161 @@
+/* Product Detail Page */
+.product-detail {
+  padding: 3rem 0;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 2rem;
+  transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+  color: var(--secondary-color);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 3rem;
+}
+
+.detail-image {
+  width: 100%;
+  background-color: var(--light-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-image .placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.detail-content h1 {
+  margin-bottom: 0.5rem;
+}
+
+.detail-content .category {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.description {
+  padding: 1.5rem;
+  background-color: var(--light-bg);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.ingredients,
+.allergens,
+.note {
+  margin-bottom: 1.5rem;
+}
+
+.ingredients h3,
+.allergens h3,
+.note h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.note {
+  padding: 1rem;
+  background-color: #fff3cd;
+  border-left: 4px solid var(--warning-color);
+  border-radius: 4px;
+}
+
+.price-section {
+  margin: 2rem 0;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.original-price {
+  margin-left: 1rem;
+  text-decoration: line-through;
+  color: var(--text-light);
+  font-size: 1.2rem;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.quantity-selector button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.quantity-selector button:hover {
+  background-color: var(--light-bg);
+}
+
+.quantity-selector input {
+  width: 60px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.cart-section {
+  margin: 2rem 0;
+}
+
+.out-of-stock {
+  padding: 1.5rem;
+  background-color: #ffebee;
+  border-radius: 8px;
+  color: #c62828;
+}
+
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .detail-image {
+    height: 300px;
+  }
+
+  .price {
+    font-size: 1.5rem;
+  }
+}

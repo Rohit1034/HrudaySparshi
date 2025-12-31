@@ -1,0 +1,107 @@
+/* Home Page - Professional Business Design */
+.home {
+  min-height: calc(100vh - 200px);
+  background-color: #f8f6f2;
+}
+
+/* Highlights Section - "Why Choose Us?" */
+.highlights {
+  padding: 5rem 0;
+  background-color: #ff8c42;
+  color: white;
+}
+
+.highlights .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.highlights h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: white;
+  font-weight: 700;
+}
+
+.highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+}
+
+.highlight-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  color: #333;
+}
+
+.highlight-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.highlight-card .icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.highlight-card h3 {
+  color: #ff8c42;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.highlight-card p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #ff8c42 0%, #d4845c 100%);
+  color: white;
+  text-align: center;
+}
+
+.cta-section h2 {
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.cta-section p {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .highlights {
+    padding: 3rem 0;
+  }
+
+  .highlights h2 {
+    font-size: 2rem;
+  }
+
+  .highlights-grid {
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .highlight-card {
+    padding: 2rem;
+  }
+
+  .highlight-card .icon {
+    font-size: 3rem;
+  }
+}

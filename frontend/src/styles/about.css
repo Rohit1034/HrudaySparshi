@@ -1,0 +1,125 @@
+/* About Page Styles */
+
+.about-page {
+  min-height: calc(100vh - 80px - 400px);
+  padding: 40px 20px;
+  background-color: #faf8f6;
+}
+
+.about-page .container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-page h1 {
+  font-size: 2.5rem;
+  color: #8b5a3c;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.about-page h2 {
+  font-size: 1.8rem;
+  color: #d4845c;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #d4845c;
+  padding-bottom: 10px;
+}
+
+.about-page p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+.about-page ul {
+  margin: 20px 0 20px 40px;
+  line-height: 1.8;
+}
+
+.about-page ul li {
+  margin-bottom: 12px;
+  color: #333;
+  font-size: 1.05rem;
+}
+
+.about-page ul li strong {
+  color: #d4845c;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin: 40px 0;
+}
+
+.value-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(212, 132, 92, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(212, 132, 92, 0.2);
+}
+
+.value-card h3 {
+  font-size: 1.3rem;
+  color: #d4845c;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.value-card p {
+  color: #666;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.story-section {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  margin: 30px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.story-section h3 {
+  color: #d4845c;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .about-page h1 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+
+  .about-page h2 {
+    font-size: 1.4rem;
+    margin-top: 30px;
+  }
+
+  .about-page p {
+    font-size: 1rem;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .story-section {
+    padding: 20px;
+  }
+}

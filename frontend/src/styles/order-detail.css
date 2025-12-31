@@ -1,0 +1,128 @@
+/* Order Detail Page */
+.order-detail-page {
+  padding: 3rem 0;
+}
+
+.order-detail-page h1 {
+  margin-bottom: 2rem;
+}
+
+.order-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.detail-section {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.detail-section.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-section h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row span:first-child {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.info-row .value {
+  color: var(--text-light);
+  text-align: right;
+}
+
+.items-table {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.items-table .table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--light-bg);
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.items-table .table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.items-table .table-row:last-child {
+  border-bottom: none;
+}
+
+.order-summary {
+  background-color: var(--light-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  color: var(--text-dark);
+}
+
+.summary-row.total {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  border-top: 2px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.status-note {
+  padding: 1.5rem;
+  background-color: #e3f2fd;
+  border-left: 4px solid var(--info-color);
+  border-radius: 6px;
+  color: #1565c0;
+  margin-top: 2rem;
+}
+
+.status-note.success {
+  background-color: #e8f5e9;
+  border-left-color: var(--success-color);
+  color: #2e7d32;
+}
+
+@media (max-width: 768px) {
+  .order-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .items-table .table-header,
+  .items-table .table-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
