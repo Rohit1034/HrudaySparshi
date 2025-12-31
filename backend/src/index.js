@@ -10,6 +10,7 @@ import homepageRoutes from './routes/homepage.js'
 import adminRoutes from './routes/admin.js'
 
 const app = express()
+// Use PORT environment variable (Azure sets PORT=8080), fallback to 3000 for local dev
 const PORT = process.env.PORT || 3000
 
 // Middleware
