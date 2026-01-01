@@ -1,10 +1,13 @@
 import nodemailer from 'nodemailer'
 
+// Use Brevo SMTP (more reliable than Gmail)
 const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail',
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
+    user: process.env.EMAIL_USER, // Your Brevo email
+    pass: process.env.EMAIL_PASSWORD // Your Brevo SMTP password
   }
 })
 
