@@ -41,13 +41,24 @@ export const createOrder = async (req, res) => {
 
     await db.collection('orders').doc(orderId).set(order)
 
-    // Send notifications
-    await Promise.all([
-      sendOrderConfirmationEmail(userEmail, userData.fullName, orderId, items, totalAmount),
-      sendOrderConfirmationWhatsApp(userData.phoneNumber, userData.fullName, orderId),
-      sendAdminNotificationEmail(orderId, userData.fullName, userData.phoneNumber, userData.address, items, totalAmount),
-      sendAdminNotificationWhatsApp(orderId, userData.fullName, userData.phoneNumber, totalAmount)
-    ])
+    // Send notifications (non-blocking - fire and forget)
+    // Order is already saved, notifications happen in background
+    Promise.all([
+      sendOrderConfirmationEmail(userEmail, userData.fullName, orderId, items, totalAmount).catch(err => {
+        console.error('Email notification failed (non-blocking):', err)
+      }),
+      sendOrderConfirmationWhatsApp(userData.phoneNumber, userData.fullName, orderId).catch(err => {
+        console.error('WhatsApp notification failed (non-blocking):', err)
+      }),
+      sendAdminNotificationEmail(orderId, userData.fullName, userData.phoneNumber, userData.address, items, totalAmount).catch(err => {
+        console.error('Admin email notification failed (non-blocking):', err)
+      }),
+      sendAdminNotificationWhatsApp(orderId, userData.fullName, userData.phoneNumber, totalAmount).catch(err => {
+        console.error('Admin WhatsApp notification failed (non-blocking):', err)
+      })
+    ]).catch(() => {
+      // Silently ignore all notification errors - order is already placed
+    })
 
     res.status(201).json({
       orderId,
