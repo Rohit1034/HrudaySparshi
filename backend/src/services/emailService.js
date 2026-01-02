@@ -61,6 +61,11 @@ export const sendOrderStatusUpdateEmail = async (userEmail, userName, orderId, s
       <p><strong>Order ID:</strong> ${orderId}</p>
       <p><strong>New Status:</strong> ${status}</p>
       <p><strong>Updated at:</strong> ${new Date().toLocaleString()}</p>
+      
+      <p>Thank you for choosing Hruday Sparshi!</p>
+      <p>Best regards,<br>Hruday Sparshi Team</p>
+    `
+
     const response = await resend.emails.send({
       from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
       to: userEmail,
@@ -71,12 +76,7 @@ export const sendOrderStatusUpdateEmail = async (userEmail, userName, orderId, s
     if (response.error) {
       console.error('Email sending error:', response.error)
       return { success: false, error: response.error.message }
-    }ait transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
-      to: userEmail,
-      subject: `Order Update - ${orderId}`,
-      html: htmlContent
-    })
+    }
 
     return { success: true, message: 'Email sent successfully' }
   } catch (error) {
@@ -102,7 +102,12 @@ export const sendAdminNotificationEmail = async (orderId, customerName, customer
       <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
       
       <h3>Items:</h3>
-      <ul>${itemsList}s://hruday-sparshi.vercel.app/admin/orders">View in Admin Panel</a></p>
+      <ul>${itemsList}</ul>
+      
+      <p><strong>Total Amount:</strong> ₹${totalAmount.toFixed(2)}</p>
+      <p><strong>Payment Mode:</strong> Cash on Delivery</p>
+      
+      <p><a href="https://hruday-sparshi.vercel.app/admin/orders">View in Admin Panel</a></p>
     `
 
     const response = await resend.emails.send({
@@ -115,12 +120,7 @@ export const sendAdminNotificationEmail = async (orderId, customerName, customer
     if (response.error) {
       console.error('Email sending error:', response.error)
       return { success: false, error: response.error.message }
-    }ait transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Order - ${orderId}`,
-      html: htmlContent
-    })
+    }
 
     return { success: true, message: 'Admin notification sent' }
   } catch (error) {
