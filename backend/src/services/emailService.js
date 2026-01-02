@@ -1,15 +1,6 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-// Use Brevo SMTP (more reliable than Gmail)
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER, // Your Brevo email
-    pass: process.env.EMAIL_PASSWORD // Your Brevo SMTP password
-  }
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export const sendOrderConfirmationEmail = async (userEmail, userName, orderId, orderItems, totalAmount) => {
   try {
@@ -36,12 +27,17 @@ export const sendOrderConfirmationEmail = async (userEmail, userName, orderId, o
       <p>Best regards,<br>Hruday Sparshi Team</p>
     `
 
-    await transporter.sendMail({
-      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
+    const response = await resend.emails.send({
+      from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
       to: userEmail,
       subject: `Order Confirmation - ${orderId}`,
       html: htmlContent
     })
+
+    if (response.error) {
+      console.error('Email sending error:', response.error)
+      return { success: false, error: response.error.message }
+    }
 
     return { success: true, message: 'Email sent successfully' }
   } catch (error) {
@@ -65,12 +61,17 @@ export const sendOrderStatusUpdateEmail = async (userEmail, userName, orderId, s
       <p><strong>Order ID:</strong> ${orderId}</p>
       <p><strong>New Status:</strong> ${status}</p>
       <p><strong>Updated at:</strong> ${new Date().toLocaleString()}</p>
-      
-      <p>Thank you for choosing Hruday Sparshi!</p>
-      <p>Best regards,<br>Hruday Sparshi Team</p>
-    `
+    const response = await resend.emails.send({
+      from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
+      to: userEmail,
+      subject: `Order Update - ${orderId}`,
+      html: htmlContent
+    })
 
-    await transporter.sendMail({
+    if (response.error) {
+      console.error('Email sending error:', response.error)
+      return { success: false, error: response.error.message }
+    }ait transporter.sendMail({
       from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
       to: userEmail,
       subject: `Order Update - ${orderId}`,
@@ -101,15 +102,20 @@ export const sendAdminNotificationEmail = async (orderId, customerName, customer
       <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
       
       <h3>Items:</h3>
-      <ul>${itemsList}</ul>
-      
-      <p><strong>Total Amount:</strong> ₹${totalAmount.toFixed(2)}</p>
-      <p><strong>Payment Mode:</strong> Cash on Delivery</p>
-      
-      <p><a href="http://localhost:3000/admin/orders">View in Admin Panel</a></p>
+      <ul>${itemsList}s://hruday-sparshi.vercel.app/admin/orders">View in Admin Panel</a></p>
     `
 
-    await transporter.sendMail({
+    const response = await resend.emails.send({
+      from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
+      to: process.env.ADMIN_EMAIL,
+      subject: `New Order - ${orderId}`,
+      html: htmlContent
+    })
+
+    if (response.error) {
+      console.error('Email sending error:', response.error)
+      return { success: false, error: response.error.message }
+    }ait transporter.sendMail({
       from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
       to: process.env.ADMIN_EMAIL,
       subject: `New Order - ${orderId}`,
