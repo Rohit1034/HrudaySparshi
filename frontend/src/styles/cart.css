@@ -165,14 +165,43 @@
   }
 
   .cart-item {
-    grid-template-columns: 80px 1fr;
-    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
   }
 
-  .item-quantity,
-  .item-subtotal,
+  .item-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .item-details {
+    width: 100%;
+  }
+
+  .item-quantity {
+    width: 100%;
+  }
+
+  .item-subtotal {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .item-subtotal::before {
+    content: 'Total: ';
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
   .remove-btn {
-    grid-column: 2;
+    align-self: flex-end;
+    margin-top: -3rem;
   }
 
   .cart-summary {

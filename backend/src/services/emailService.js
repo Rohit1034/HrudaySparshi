@@ -1,6 +1,35 @@
-import { Resend } from 'resend'
+import axios from 'axios'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY
+const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN // e.g., sandboxXXXX.mailgun.org
+
+const sendEmailViaMailgun = async (to, subject, htmlContent) => {
+  try {
+    const data = new URLSearchParams()
+    data.append('from', 'noreply@hrudaysparshi.com')
+    data.append('to', to)
+    data.append('subject', subject)
+    data.append('html', htmlContent)
+
+    const response = await axios.post(
+      `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`,
+      data,
+      {
+        auth: {
+          username: 'api',
+          password: MAILGUN_API_KEY
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+    )
+    return { success: true, message: 'Email sent' }
+  } catch (error) {
+    console.error('Email error:', error.response?.data || error.message)
+    return { success: false, error: error.message }
+  }
+}
 
 export const sendOrderConfirmationEmail = async (userEmail, userName, orderId, orderItems, totalAmount) => {
   try {
@@ -27,17 +56,7 @@ export const sendOrderConfirmationEmail = async (userEmail, userName, orderId, o
       <p>Best regards,<br>Hruday Sparshi Team</p>
     `
 
-    const response = await resend.emails.send({
-      from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
-      to: userEmail,
-      subject: `Order Confirmation - ${orderId}`,
-      html: htmlContent
-    })
-
-    if (response.error) {
-      console.error('Email sending error:', response.error)
-      return { success: false, error: response.error.message }
-    }
+    await sendEmailViaMailgun(userEmail, `Order Confirmation - ${orderId}`, htmlContent)
 
     return { success: true, message: 'Email sent successfully' }
   } catch (error) {
@@ -66,17 +85,7 @@ export const sendOrderStatusUpdateEmail = async (userEmail, userName, orderId, s
       <p>Best regards,<br>Hruday Sparshi Team</p>
     `
 
-    const response = await resend.emails.send({
-      from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
-      to: userEmail,
-      subject: `Order Update - ${orderId}`,
-      html: htmlContent
-    })
-
-    if (response.error) {
-      console.error('Email sending error:', response.error)
-      return { success: false, error: response.error.message }
-    }
+    await sendEmailViaMailgun(userEmail, `Order Update - ${orderId}`, htmlContent)
 
     return { success: true, message: 'Email sent successfully' }
   } catch (error) {
@@ -110,17 +119,7 @@ export const sendAdminNotificationEmail = async (orderId, customerName, customer
       <p><a href="https://hruday-sparshi.vercel.app/admin/orders">View in Admin Panel</a></p>
     `
 
-    const response = await resend.emails.send({
-      from: process.env.EMAIL_FROM_ADDRESS || 'noreply@hrudaysparshi.com',
-      to: process.env.ADMIN_EMAIL,
-      subject: `New Order - ${orderId}`,
-      html: htmlContent
-    })
-
-    if (response.error) {
-      console.error('Email sending error:', response.error)
-      return { success: false, error: response.error.message }
-    }
+    await sendEmailViaMailgun(process.env.ADMIN_EMAIL, `New Order - ${orderId}`, htmlContent)
 
     return { success: true, message: 'Admin notification sent' }
   } catch (error) {

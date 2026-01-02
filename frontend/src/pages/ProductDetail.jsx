@@ -46,7 +46,7 @@ function ProductDetail() {
     <div className="product-detail">
       <div className="container">
         <button className="back-btn" onClick={() => navigate('/products')}>
-          ← Back to Products
+          <strong>←</strong>
         </button>
 
         <div className="detail-grid">

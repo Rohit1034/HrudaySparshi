@@ -1,9 +1,20 @@
 import React from 'react'
 import './styles/index.css'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 import { useAuth } from './contexts/AuthContext'
+
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
+  return null
+}
 
 // Pages
 import Home from './pages/Home'
@@ -59,6 +70,7 @@ function App() {
     <Router>
       <AuthProvider>
         <CartProvider>
+          <ScrollToTop />
           <div className="app">
             <Header />
             <main className="main-content">

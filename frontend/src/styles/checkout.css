@@ -97,8 +97,53 @@
   padding: 0.8rem 0;
 }
 
+@media (max-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 768px) {
+  .checkout-page {
+    padding: 1.5rem 0;
+  }
+
   .checkout-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .checkout-section {
+    padding: 1.5rem;
+  }
+
+  .checkout-section h2 {
+    font-size: 1.2rem;
+  }
+
+  .order-items {
+    gap: 0.8rem;
+  }
+
+  .checkout-item {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-item {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .checkout-section h2 {
+    font-size: 1.1rem;
+  }
+
+  .form-actions .btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
   }
 }
