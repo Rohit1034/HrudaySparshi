@@ -1,29 +1,41 @@
 import axios from 'axios'
 
-const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY
-const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN // e.g., sandboxXXXX.mailgun.org
+const BREVO_API_KEY = process.env.BREVO_API_KEY
 
-const sendEmailViaMailgun = async (to, subject, htmlContent) => {
+const sendEmailViaBrevo = async (to, subject, htmlContent) => {
   try {
-    const data = new URLSearchParams()
-    data.append('from', 'noreply@hrudaysparshi.com')
-    data.append('to', to)
-    data.append('subject', subject)
-    data.append('html', htmlContent)
+    // Debug: Check if key exists
+    if (!BREVO_API_KEY) {
+      console.error('BREVO_API_KEY not found in environment variables')
+      return { success: false, error: 'API key not configured' }
+    }
 
+    console.log('Sending email via Brevo to:', to)
+    
     const response = await axios.post(
-      `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`,
-      data,
+      'https://api.brevo.com/v3/smtp/email',
       {
-        auth: {
-          username: 'api',
-          password: MAILGUN_API_KEY
+        sender: {
+          email: 'rohit.patil1034@gmail.com',
+          name: 'Hruday Sparshi'
         },
+        to: [
+          {
+            email: to
+          }
+        ],
+        subject: subject,
+        htmlContent: htmlContent
+      },
+      {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'accept': 'application/json',
+          'api-key': BREVO_API_KEY,
+          'Content-Type': 'application/json'
         }
       }
     )
+    console.log('Email sent successfully:', response.data)
     return { success: true, message: 'Email sent' }
   } catch (error) {
     console.error('Email error:', error.response?.data || error.message)
@@ -56,7 +68,7 @@ export const sendOrderConfirmationEmail = async (userEmail, userName, orderId, o
       <p>Best regards,<br>Hruday Sparshi Team</p>
     `
 
-    await sendEmailViaMailgun(userEmail, `Order Confirmation - ${orderId}`, htmlContent)
+    await sendEmailViaBrevo(userEmail, `Order Confirmation - ${orderId}`, htmlContent)
 
     return { success: true, message: 'Email sent successfully' }
   } catch (error) {
@@ -85,7 +97,7 @@ export const sendOrderStatusUpdateEmail = async (userEmail, userName, orderId, s
       <p>Best regards,<br>Hruday Sparshi Team</p>
     `
 
-    await sendEmailViaMailgun(userEmail, `Order Update - ${orderId}`, htmlContent)
+    await sendEmailViaBrevo(userEmail, `Order Update - ${orderId}`, htmlContent)
 
     return { success: true, message: 'Email sent successfully' }
   } catch (error) {
@@ -119,7 +131,7 @@ export const sendAdminNotificationEmail = async (orderId, customerName, customer
       <p><a href="https://hruday-sparshi.vercel.app/admin/orders">View in Admin Panel</a></p>
     `
 
-    await sendEmailViaMailgun(process.env.ADMIN_EMAIL, `New Order - ${orderId}`, htmlContent)
+    await sendEmailViaBrevo(process.env.ADMIN_EMAIL, `New Order - ${orderId}`, htmlContent)
 
     return { success: true, message: 'Admin notification sent' }
   } catch (error) {
