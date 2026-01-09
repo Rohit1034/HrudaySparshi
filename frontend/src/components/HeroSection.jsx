@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/components.css'
-import heroImage from '../assets/Ukadiche-modak.jpg'
+import heroImage from '../assets/Ukadiche-Modak.jpg'
 
 function HeroSection({ content }) {
   return (
