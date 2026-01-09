@@ -190,6 +190,13 @@
   color: var(--accent-color);
 }
 
+.price-unit {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: 0.25rem;
+  vertical-align: super;
+}
+
 .category-badge {
   background: var(--cream-dark);
   color: var(--gray-dark);

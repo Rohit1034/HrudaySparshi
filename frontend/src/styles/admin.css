@@ -22,7 +22,7 @@
 }
 
 .admin-logo h3 {
-  color: white;
+  color: #2d5016;
   font-size: 1.1rem;
 }
 
@@ -33,7 +33,7 @@
 .admin-menu-item {
   display: block;
   padding: 1rem 1.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(45, 80, 22);
   transition: all 0.3s ease;
   border-left: 4px solid transparent;
 }
@@ -346,7 +346,7 @@
 .image-preview .btn {
   margin-top: 0.5rem;
 }
-}
+
 
 .product-form .form-group {
   display: flex;

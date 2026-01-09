@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/components.css'
+import heroImage from '../assets/Ukadiche-modak.jpg'
 
 function HeroSection({ content }) {
   return (
@@ -20,8 +21,7 @@ function HeroSection({ content }) {
         </div>
         <div className="hero-image">
           <div className="hero-image-placeholder">
-            {/* Hero image would go here */}
-            <div className="hero-icon">🍲</div>
+            <img src={heroImage} alt="Ukadiche Modak" />
           </div>
         </div>
       </div>

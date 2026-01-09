@@ -94,7 +94,7 @@ function Products() {
                     <h3>{product.name}</h3>
                     <p className="description">{product.description}</p>
                     <div className="product-footer">
-                      <span className="price">₹{product.price}</span>
+                      <span className="price">₹{product.price}<span className="price-unit">/KG</span></span>
                       <span className="category-badge">{product.category}</span>
                     </div>
                   </div>
