@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { getHomepageContent, getProducts } from '../services/apiService'
 import { Link } from 'react-router-dom'
 import HeroSection from '../components/HeroSection'
-import FeaturedProducts from '../components/FeaturedProducts'
+import Carousel from '../components/Carousel'
 import '../styles/home.css'
 
 function Home() {
@@ -20,8 +20,8 @@ function Home() {
           getProducts()
         ])
         setHomepageContent(content)
-        // Get featured products
-        const featured = products.filter(p => p.featured).slice(0, 6)
+        // Get featured products (marked as featured by admin)
+        const featured = products.filter(p => p.isFeatured === true)
         setFeaturedProducts(featured)
       } catch (err) {
         setError(err.message)
@@ -38,6 +38,7 @@ function Home() {
   return (
     <div className="home">
       <HeroSection content={homepageContent} />
+      <Carousel products={featuredProducts} />
       
       <section className="highlights">
         <div className="container">
@@ -66,8 +67,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-      <FeaturedProducts products={featuredProducts} />
 
       <section className="cta-section">
         <div className="container">

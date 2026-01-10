@@ -52,7 +52,7 @@ function ProductDetail() {
         <div className="detail-grid">
           <div className="detail-image">
             {product.image ? (
-              <img src={product.image} alt={product.name} />
+              <img src={product.image} alt={product.name} loading="lazy" />
             ) : (
               <div className="placeholder">No Image Available</div>
             )}
@@ -81,7 +81,7 @@ function ProductDetail() {
             )}
 
             <div className="price-section">
-              <span className="price">₹{product.price}</span>
+              <span className="price">₹{product.price}<span className="price-unit">{product.priceUnit || '/KG'}</span></span>
               {product.originalPrice && (
                 <span className="original-price">₹{product.originalPrice}</span>
               )}

@@ -6,7 +6,7 @@ function FeaturedProducts({ products }) {
   return (
     <section className="featured-products">
       <div className="container">
-        <h2>Featured Products</h2>
+        <h2>Bestsellers Products</h2>
         <p className="section-subtitle">Our best sellers and customer favorites</p>
 
         <div className="products-grid">

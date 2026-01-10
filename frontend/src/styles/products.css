@@ -194,7 +194,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   margin-left: 0.25rem;
-  vertical-align: super;
+  vertical-align: baseline;
 }
 
 .category-badge {

@@ -7,6 +7,7 @@ function ProductForm({ product, onSave, onCancel }) {
     category: 'meals',
     description: '',
     price: '',
+    priceUnit: '/KG',
     image: '',
     availability: true
   })
@@ -132,6 +133,20 @@ function ProductForm({ product, onSave, onCancel }) {
             step="0.01"
             required
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="priceUnit">Price Unit *</label>
+          <select
+            id="priceUnit"
+            name="priceUnit"
+            value={formData.priceUnit}
+            onChange={handleChange}
+            required
+          >
+            <option value="/KG">Per Kilogram (/KG)</option>
+            <option value="/PCS">Per Piece (/PCS)</option>
+          </select>
         </div>
 
         <div className="form-group">

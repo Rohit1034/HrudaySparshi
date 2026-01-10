@@ -85,7 +85,7 @@ function Products() {
                 >
                   <div className="product-image">
                     {product.image ? (
-                      <img src={product.image} alt={product.name} />
+                      <img src={product.image} alt={product.name} loading="lazy" />
                     ) : (
                       <div className="placeholder">🍲</div>
                     )}
@@ -94,7 +94,7 @@ function Products() {
                     <h3>{product.name}</h3>
                     <p className="description">{product.description}</p>
                     <div className="product-footer">
-                      <span className="price">₹{product.price}<span className="price-unit">/KG</span></span>
+                      <span className="price">₹{product.price}<span className="price-unit">{product.priceUnit || '/KG'}</span></span>
                       <span className="category-badge">{product.category}</span>
                     </div>
                   </div>

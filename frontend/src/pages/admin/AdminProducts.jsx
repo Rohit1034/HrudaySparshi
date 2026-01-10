@@ -59,6 +59,15 @@ function AdminProducts() {
     }
   }
 
+  const handleToggleFeatured = async (product) => {
+    try {
+      await updateProduct(product.id, { isFeatured: !product.isFeatured })
+      loadProducts()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   return (
     <div className="admin-layout">
       <AdminNav />
@@ -115,6 +124,12 @@ function AdminProducts() {
                   )}
                 </div>
                 <div className="actions">
+                  <button
+                    className={`btn btn-sm ${product.isFeatured ? 'btn-primary' : 'btn-secondary'}`}
+                    onClick={() => handleToggleFeatured(product)}
+                  >
+                    {product.isFeatured ? '⭐ Featured' : '☆ Feature'}
+                  </button>
                   <button
                     className="btn btn-sm btn-secondary"
                     onClick={() => {

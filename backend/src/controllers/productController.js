@@ -40,7 +40,7 @@ export const getProductById = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, category, price, description, image, availability } = req.body
+    const { name, category, price, description, image, availability, isFeatured, priceUnit } = req.body
 
     if (!name || !category || !price) {
       return res.status(400).json({ error: 'Missing required fields' })
@@ -51,9 +51,11 @@ export const createProduct = async (req, res) => {
       name,
       category,
       price: parseFloat(price),
+      priceUnit: priceUnit || '/KG',
       description: description || '',
       image: image || '',
       availability: availability !== false,
+      isFeatured: isFeatured || false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
@@ -72,7 +74,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params
-    const { name, category, price, description, image, availability } = req.body
+    const { name, category, price, description, image, availability, isFeatured, priceUnit } = req.body
 
     const productDoc = await db.collection('products').doc(productId).get()
     if (!productDoc.exists) {
@@ -86,6 +88,8 @@ export const updateProduct = async (req, res) => {
     if (description !== undefined) updateData.description = description
     if (image !== undefined) updateData.image = image
     if (availability !== undefined) updateData.availability = availability
+    if (isFeatured !== undefined) updateData.isFeatured = isFeatured
+    if (priceUnit) updateData.priceUnit = priceUnit
 
     updateData.updatedAt = new Date().toISOString()
 
