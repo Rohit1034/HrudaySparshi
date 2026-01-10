@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest --detectOpenHandles --forceExit",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "upload-images": "node scripts/uploadImagesToFirebase.js"
   },
   "keywords": [
     "food",
