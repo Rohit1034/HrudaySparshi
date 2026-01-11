@@ -42,9 +42,9 @@ function Footer() {
 
             <div className="footer-section">
               <h4>Contact Us</h4>
-              <p><strong>Email:</strong> rohit.patil1034t@gmail.com</p>
-              <p><strong>Phone:</strong> +91 9082774647</p>
-              <p><strong>WhatsApp:</strong> +91 9082774647</p>
+              <p><strong>Email:</strong> ks0779719@gmail.com</p>
+              <p><strong>Phone:</strong> +91 9082774647/8369427793</p>
+              <p><strong>WhatsApp:</strong> +91 9082774647/8369427793</p>
               <p><strong>Hours:</strong> 10 AM - 8 PM</p>
             </div>
           </div>

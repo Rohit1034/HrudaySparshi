@@ -52,7 +52,7 @@ function Header() {
       <div className="container header-content">
         <Link to="/" className="logo">
           <img src={logo || "/placeholder.svg"} alt="Hruday Sparshi" className="logo-image" />
-          <span className="logo-text">हृदयस्पर्शी</span>
+          <span className="logo-text">Hruday Sparshi</span>
         </Link>
 
         <nav className={`nav ${menuOpen ? "open" : ""}`}>

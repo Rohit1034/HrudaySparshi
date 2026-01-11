@@ -35,8 +35,8 @@ function Contact() {
           <div className="contact-info">
             <div className="info-card">
               <h3>📍 Address</h3>
-              <p>AL-5/2/9, सुयोग सोसायटी, सेक्टर 5</p>
-              <p>ऐरोली, नवी मुुंबई - 400708</p>
+              <p>AL-5/2/9, Suyog CHS, Sector -5</p>
+              <p>Airoli Navi Mumbai - 400708</p>
             </div>
 
             <div className="info-card">
@@ -53,7 +53,7 @@ function Contact() {
 
             <div className="info-card">
               <h3>✉️ Email</h3>
-              <p>rohit.patil1034@gmail.com</p>
+              <p>ks0779719@gmail.com</p>
               <p>We'll respond within 24 hours</p>
             </div>
 
