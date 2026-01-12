@@ -40,13 +40,13 @@
 }
 
 .logo-image {
-  height: 48px;
+  height: 68px;
   width: auto;
   object-fit: contain;
 }
 
 .logo-text {
-  font-size: 1.25rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: var(--primary-color);
   letter-spacing: -0.01em;
@@ -63,8 +63,8 @@
 
 .nav-link {
   color: var(--gray-dark);
-  font-weight: 500;
-  font-size: 0.9375rem;
+  font-weight: 700;
+  font-size: 1.5375rem;
   transition: color 0.2s ease;
   position: relative;
   text-decoration: none;
