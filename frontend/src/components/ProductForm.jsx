@@ -4,7 +4,7 @@ import '../styles/admin.css'
 function ProductForm({ product, onSave, onCancel }) {
   const [formData, setFormData] = useState(product || {
     name: '',
-    category: 'meals',
+    category: '',
     description: '',
     price: '',
     priceUnit: '/KG',
@@ -14,7 +14,7 @@ function ProductForm({ product, onSave, onCancel }) {
   const [imagePreview, setImagePreview] = useState(product?.image || null)
   const [uploading, setUploading] = useState(false)
 
-  const categories = ['meals', 'snacks', 'sweets', 'laddus', 'festival']
+  const categories = ['snacks', 'sweets', 'laddus', 'festival']
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target

@@ -1,6 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/footer.css'
+import linkedIn from "../assets/linkedIn.png"
+import insta from "../assets/instagram.png"
+import whatsapp from "../assets/whatsapp.png"
 
 function Footer() {
   const currentYear = new Date().getFullYear()
@@ -14,9 +17,15 @@ function Footer() {
               <h3 className="footer-brand">Hruday Sparshi</h3>
               <p className="footer-tagline">Authentic homemade meals, snacks, and sweets made with tradition and care.</p>
               <div className="social-links">
-                <a href="#" title="Facebook">f</a>
-                <a href="#" title="Instagram">📷</a>
-                <a href="#" title="WhatsApp">💬</a>
+                <a href="https://www.linkedin.com/company/hrudaysparshy-foods/" title="LinkedIn">
+                <img src={linkedIn || "/placeholder.svg"} alt="LinkedIn" className="LinkedIn" />
+                </a>
+                <a href="https://www.instagram.com/hruday_sparshi_foods?igsh=MWpxN2djNW1sdW9heA==" title="Instagram">
+                <img src={insta || "/placeholder.svg"} alt="Instagram" className="Insta" />
+                </a>
+                <a href="https://www.instagram.com/hruday_sparshi_foods?igsh=MWpxN2djNW1sdW9heA==" title="Instagram">
+                <img src={whatsapp || "/placeholder.svg"} alt="whatsapp" className="whatsapp" />
+                </a>
               </div>
             </div>
 

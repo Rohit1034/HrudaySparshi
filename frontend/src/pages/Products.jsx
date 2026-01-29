@@ -12,7 +12,6 @@ function Products() {
 
   const categories = [
     { id: 'all', name: 'All Products', icon: '🍽️' },
-    { id: 'meals', name: 'Meals', icon: '🍲' },
     { id: 'snacks', name: 'Snacks', icon: '🥒' },
     { id: 'sweets', name: 'Sweets', icon: '🍪' },
     { id: 'laddus', name: 'Laddus', icon: '🟠' },
