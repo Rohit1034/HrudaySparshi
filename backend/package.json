@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest --detectOpenHandles --forceExit",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --detectOpenHandles --forceExit",
     "lint": "eslint src",
     "upload-images": "node scripts/uploadImagesToFirebase.js",
     "mark-featured": "node scripts/markFeaturedProduct.js"
