@@ -9,6 +9,8 @@ function Contact() {
     subject: '',
     message: ''
   })
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -18,11 +20,34 @@ function Contact() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Implementation for contact form submission
-    alert('Thank you for reaching out! We will get back to you soon.')
-    setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: data.message })
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to send message' })
+      }
+    } catch (error) {
+      console.error('Error sending message:', error)
+      setMessage({ type: 'error', text: 'Error sending message. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -65,6 +90,11 @@ function Contact() {
           </div>
 
           <div className="contact-form-container">
+            {message && (
+              <div className={`message-alert message-${message.type}`}>
+                {message.text}
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Your Name</label>
@@ -126,8 +156,8 @@ function Contact() {
                 ></textarea>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-lg">
-                Send Message
+              <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>

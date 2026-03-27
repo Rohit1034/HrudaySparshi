@@ -8,6 +8,7 @@ import productRoutes from './routes/products.js'
 import orderRoutes from './routes/orders.js'
 import homepageRoutes from './routes/homepage.js'
 import adminRoutes from './routes/admin.js'
+import contactRoutes from './routes/contact.js'
 
 const app = express()
 // Use PORT environment variable (Azure sets PORT=8080), fallback to 3000 for local dev
@@ -40,6 +41,7 @@ app.use('/products', productRoutes)
 app.use('/orders', orderRoutes)
 app.use('/homepage', homepageRoutes)
 app.use('/admin', adminRoutes)
+app.use('/contact', contactRoutes)
 
 // Health check
 app.get('/health', (req, res) => {

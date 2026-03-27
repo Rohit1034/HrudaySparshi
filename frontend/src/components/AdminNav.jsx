@@ -25,6 +25,11 @@ function AdminNav() {
           </Link>
         </li>
         <li>
+          <Link to="/admin/messages" className="admin-menu-item">
+            💬 Messages
+          </Link>
+        </li>
+        <li>
           <Link to="/admin/settings" className="admin-menu-item">
             ⚙️ Settings
           </Link>

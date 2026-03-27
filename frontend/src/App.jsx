@@ -33,6 +33,7 @@ import Contact from './pages/Contact'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminProducts from './pages/admin/AdminProducts'
+import AdminMessages from './pages/admin/AdminMessages'
 import AdminSettings from './pages/admin/AdminSettings'
 
 // Components
@@ -140,6 +141,14 @@ function App() {
                   element={
                     <AdminRoute>
                       <AdminProducts />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/messages"
+                  element={
+                    <AdminRoute>
+                      <AdminMessages />
                     </AdminRoute>
                   }
                 />
