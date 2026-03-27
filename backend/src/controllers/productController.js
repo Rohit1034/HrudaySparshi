@@ -1,21 +1,36 @@
 import { db } from '../config/firebase.js'
 import { v4 as uuidv4 } from 'uuid'
+import { createCache } from '../utils/cache.js'
+
+const PRODUCTS_CACHE_KEY = 'products_all'
+const productCache = createCache(5 * 60 * 1000) // 5 minutes
 
 export const getProducts = async (req, res) => {
   try {
     const { category } = req.query
-    let query = db.collection('products')
 
+    // Only cache full product list (no category filter)
+    if (!category) {
+      const cached = productCache.get(PRODUCTS_CACHE_KEY)
+      if (cached) {
+        return res.json(cached)
+      }
+    }
+
+    let query = db.collection('products')
     if (category) {
       query = query.where('category', '==', category)
     }
 
     const productsSnapshot = await query.get()
     const products = []
-
     productsSnapshot.forEach(doc => {
       products.push({ id: doc.id, ...doc.data() })
     })
+
+    if (!category) {
+      productCache.set(PRODUCTS_CACHE_KEY, products)
+    }
 
     res.json(products)
   } catch (error) {
@@ -61,6 +76,7 @@ export const createProduct = async (req, res) => {
     }
 
     await db.collection('products').doc(productId).set(product)
+    productCache.del(PRODUCTS_CACHE_KEY)
 
     res.status(201).json({
       id: productId,
@@ -94,6 +110,7 @@ export const updateProduct = async (req, res) => {
     updateData.updatedAt = new Date().toISOString()
 
     await db.collection('products').doc(productId).update(updateData)
+    productCache.del(PRODUCTS_CACHE_KEY)
 
     res.json({
       id: productId,
@@ -115,6 +132,7 @@ export const deleteProduct = async (req, res) => {
     }
 
     await db.collection('products').doc(productId).delete()
+    productCache.del(PRODUCTS_CACHE_KEY)
 
     res.json({ message: 'Product deleted successfully' })
   } catch (error) {

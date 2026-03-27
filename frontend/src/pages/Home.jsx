@@ -8,32 +8,25 @@ import '../styles/home.css'
 function Home() {
   const [homepageContent, setHomepageContent] = useState(null)
   const [featuredProducts, setFeaturedProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
+  // Load homepage content and featured products independently so
+  // neither blocks the other from appearing.
   useEffect(() => {
-    const loadContent = async () => {
-      try {
-        setLoading(true)
-        const [content, products] = await Promise.all([
-          getHomepageContent(),
-          getProducts()
-        ])
-        setHomepageContent(content)
-        // Get featured products (marked as featured by admin)
-        const featured = products.filter(p => p.isFeatured === true)
-        setFeaturedProducts(featured)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadContent()
+    getHomepageContent()
+      .then(setHomepageContent)
+      .catch(() => setHomepageContent({}))
   }, [])
 
-  if (loading) return <div className="loading">Loading...</div>
+  useEffect(() => {
+    getProducts()
+      .then(products => {
+        const featured = products.filter(p => p.isFeatured === true)
+        setFeaturedProducts(featured)
+      })
+      .catch(() => {
+        // Featured products are non-critical; silently ignore errors here
+      })
+  }, [])
 
   return (
     <div className="home">

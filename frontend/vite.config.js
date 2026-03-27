@@ -15,6 +15,19 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['recharts']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 600
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true
   }
 })

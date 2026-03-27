@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import './styles/index.css'
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
@@ -16,28 +16,32 @@ function ScrollToTop() {
   return null
 }
 
-// Pages
-import Home from './pages/Home'
-import Products from './pages/Products'
-import ProductDetail from './pages/ProductDetail'
-import Cart from './pages/Cart'
-import Checkout from './pages/Checkout'
-import OrderHistory from './pages/OrderHistory'
-import OrderDetail from './pages/OrderDetail'
-import Login from './pages/Login'
-import SignUp from './pages/SignUp'
-import About from './pages/About'
-import Contact from './pages/Contact'
+// Lazy-loaded pages (reduces initial bundle size)
+const Home = lazy(() => import('./pages/Home'))
+const Products = lazy(() => import('./pages/Products'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const Cart = lazy(() => import('./pages/Cart'))
+const Checkout = lazy(() => import('./pages/Checkout'))
+const OrderHistory = lazy(() => import('./pages/OrderHistory'))
+const OrderDetail = lazy(() => import('./pages/OrderDetail'))
+const Login = lazy(() => import('./pages/Login'))
+const SignUp = lazy(() => import('./pages/SignUp'))
+const About = lazy(() => import('./pages/About'))
+const Contact = lazy(() => import('./pages/Contact'))
 
-// Admin Pages
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminOrders from './pages/admin/AdminOrders'
-import AdminProducts from './pages/admin/AdminProducts'
-import AdminSettings from './pages/admin/AdminSettings'
+// Lazy-loaded admin pages
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'))
+const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'))
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'))
 
 // Components
 import Header from './components/Header'
 import Footer from './components/Footer'
+
+function PageLoader() {
+  return <div className="loading">Loading...</div>
+}
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole = null }) {
@@ -74,6 +78,7 @@ function App() {
           <div className="app">
             <Header />
             <main className="main-content">
+              <Suspense fallback={<PageLoader />}>
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
@@ -152,6 +157,7 @@ function App() {
                   }
                 />
               </Routes>
+              </Suspense>
             </main>
             <Footer />
           </div>

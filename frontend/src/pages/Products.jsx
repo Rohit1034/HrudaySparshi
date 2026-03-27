@@ -1,7 +1,61 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { getProducts } from '../services/apiService'
 import { Link } from 'react-router-dom'
 import '../styles/products.css'
+
+const SKELETON_COUNT = 8
+
+function ProductSkeleton() {
+  return (
+    <div className="product-card product-card--skeleton" aria-hidden="true">
+      <div className="product-image skeleton-box" />
+      <div className="product-info">
+        <div className="skeleton-line skeleton-line--title" />
+        <div className="skeleton-line" />
+        <div className="skeleton-line skeleton-line--short" />
+        <div className="product-footer">
+          <div className="skeleton-line skeleton-line--price" />
+          <div className="skeleton-line skeleton-line--badge" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ProductCard({ product }) {
+  const [imgLoaded, setImgLoaded] = useState(false)
+  const [imgError, setImgError] = useState(false)
+
+  return (
+    <Link to={`/products/${product.id}`} className="product-card">
+      <div className="product-image">
+        {product.image && !imgError ? (
+          <>
+            {!imgLoaded && <div className="skeleton-box product-image-placeholder" aria-hidden="true" />}
+            <img
+              src={product.image}
+              alt={product.name}
+              loading="lazy"
+              style={imgLoaded ? {} : { opacity: 0, position: 'absolute' }}
+              onLoad={() => setImgLoaded(true)}
+              onError={() => setImgError(true)}
+            />
+          </>
+        ) : (
+          <div className="placeholder">🍲</div>
+        )}
+      </div>
+      <div className="product-info">
+        <h3>{product.name}</h3>
+        <p className="description">{product.description}</p>
+        <div className="product-footer">
+          <span className="price">₹{product.price}<span className="price-unit">{product.priceUnit || '/KG'}</span></span>
+          <span className="category-badge">{product.category}</span>
+        </div>
+      </div>
+    </Link>
+  )
+}
 
 function Products() {
   const [products, setProducts] = useState([])
@@ -9,6 +63,7 @@ function Products() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const fetchingRef = useRef(false)
 
   const categories = [
     { id: 'all', name: 'All Products', icon: '🍽️' },
@@ -18,22 +73,27 @@ function Products() {
     { id: 'festival', name: 'Festival Specials', icon: '🎉' }
   ]
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true)
-        const data = await getProducts()
-        setProducts(data)
-        setFilteredProducts(data)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
+  const loadProducts = useCallback(async () => {
+    // Prevent concurrent fetches (e.g. rapid retry button clicks)
+    if (fetchingRef.current) return
+    fetchingRef.current = true
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await getProducts()
+      setProducts(data)
+      setFilteredProducts(data)
+    } catch (err) {
+      setError(err.message || 'Failed to load products. Please try again.')
+    } finally {
+      setLoading(false)
+      fetchingRef.current = false
     }
-
-    loadProducts()
   }, [])
+
+  useEffect(() => {
+    loadProducts()
+  }, [loadProducts])
 
   useEffect(() => {
     if (selectedCategory === 'all') {
@@ -69,46 +129,35 @@ function Products() {
           </div>
         </section>
 
-        {loading ? (
-          <div className="loading">Loading products...</div>
-        ) : error ? (
-          <div className="error">Error: {error}</div>
+        {error ? (
+          <div className="error-state">
+            <p>⚠️ {error}</p>
+            <button className="btn btn-primary" onClick={loadProducts}>Try Again</button>
+          </div>
+        ) : loading ? (
+          <section className="products-section">
+            <div className="products-grid">
+              {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </div>
+          </section>
         ) : (
           <section className="products-section">
             <div className="products-grid">
               {filteredProducts.map(product => (
-                <Link
-                  key={product.id}
-                  to={`/products/${product.id}`}
-                  className="product-card"
-                >
-                  <div className="product-image">
-                    {product.image ? (
-                      <img src={product.image} alt={product.name} loading="lazy" />
-                    ) : (
-                      <div className="placeholder">🍲</div>
-                    )}
-                  </div>
-                  <div className="product-info">
-                    <h3>{product.name}</h3>
-                    <p className="description">{product.description}</p>
-                    <div className="product-footer">
-                      <span className="price">₹{product.price}<span className="price-unit">{product.priceUnit || '/KG'}</span></span>
-                      <span className="category-badge">{product.category}</span>
-                    </div>
-                  </div>
-                </Link>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </section>
         )}
 
-        {filteredProducts.length === 0 && !loading && (
+        {filteredProducts.length === 0 && !loading && !error && (
           <div className="no-products">
             <p>No products found in this category.</p>
-            <Link to="/products" className="btn btn-primary" onClick={() => setSelectedCategory('all')}>
+            <button className="btn btn-primary" onClick={() => setSelectedCategory('all')}>
               View All Products
-            </Link>
+            </button>
           </div>
         )}
       </div>
