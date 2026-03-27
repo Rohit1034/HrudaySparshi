@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import AdminNav from '../../components/AdminNav'
 import { useAuth } from '../../contexts/AuthContext'
+import { db } from '../../config/firebase'
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy
+} from 'firebase/firestore'
 import '../../styles/admin.css'
 
 function AdminMessages() {
@@ -14,23 +24,17 @@ function AdminMessages() {
     setLoading(true)
     setError(null)
     try {
-      if (!currentUser) {
-        throw new Error('Not authenticated')
-      }
-      
-      const token = await currentUser.getIdToken()
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/contact`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      const q = query(collection(db, 'contactMessages'), orderBy('createdAt', 'desc'))
+      const snapshot = await getDocs(q)
+      const msgs = snapshot.docs.map(d => {
+        const data = d.data()
+        return {
+          id: d.id,
+          ...data,
+          timestamp: data.createdAt?.toDate?.() || data.createdAt
         }
       })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch messages')
-      }
-
-      const data = await response.json()
-      setMessages(data.messages || [])
+      setMessages(msgs)
     } catch (err) {
       console.error('Error loading messages:', err)
       setError(err.message)
@@ -47,19 +51,10 @@ function AdminMessages() {
 
   const handleMarkAsRead = async (messageId) => {
     try {
-      const token = await currentUser.getIdToken()
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/contact/${messageId}/read`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        setMessages(messages.map(msg => 
-          msg.id === messageId ? { ...msg, read: true } : msg
-        ))
-      }
+      await updateDoc(doc(db, 'contactMessages', messageId), { read: true })
+      setMessages(messages.map(msg =>
+        msg.id === messageId ? { ...msg, read: true } : msg
+      ))
     } catch (err) {
       console.error('Error marking message as read:', err)
     }
@@ -68,17 +63,8 @@ function AdminMessages() {
   const handleDelete = async (messageId) => {
     if (window.confirm('Are you sure you want to delete this message?')) {
       try {
-        const token = await currentUser.getIdToken()
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/contact/${messageId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-
-        if (response.ok) {
-          setMessages(messages.filter(msg => msg.id !== messageId))
-        }
+        await deleteDoc(doc(db, 'contactMessages', messageId))
+        setMessages(messages.filter(msg => msg.id !== messageId))
       } catch (err) {
         console.error('Error deleting message:', err)
       }

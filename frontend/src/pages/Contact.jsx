@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { db } from '../config/firebase'
+import { collection, addDoc } from 'firebase/firestore'
 import '../styles/contact.css'
 
 function Contact() {
@@ -22,26 +24,29 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
     setMessage(null)
 
+    const { name, email, phone, subject, message: msg } = formData
+    if (!name || !email || !phone || !subject || !msg) {
+      setMessage({ type: 'error', text: 'All fields are required' })
+      return
+    }
+
+    setLoading(true)
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+      await addDoc(collection(db, 'contactMessages'), {
+        name,
+        email,
+        phone,
+        subject,
+        message: msg,
+        read: false,
+        createdAt: new Date()
       })
 
-      const data = await response.json()
-
-      if (response.ok) {
-        setMessage({ type: 'success', text: data.message })
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
-      } else {
-        setMessage({ type: 'error', text: data.error || 'Failed to send message' })
-      }
+      setMessage({ type: 'success', text: 'Message received! We will get back to you soon.' })
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
     } catch (error) {
       console.error('Error sending message:', error)
       setMessage({ type: 'error', text: 'Error sending message. Please try again.' })
