@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { getProducts } from '../services/apiService'
+import { getProductsPaginated } from '../services/apiService'
 import { Link } from 'react-router-dom'
 import '../styles/products.css'
 
-const SKELETON_COUNT = 8
+const PAGE_SIZE = 8
+const SKELETON_COUNT = PAGE_SIZE
 
 function ProductSkeleton() {
   return (
@@ -59,11 +60,16 @@ function ProductCard({ product }) {
 
 function Products() {
   const [products, setProducts] = useState([])
-  const [filteredProducts, setFilteredProducts] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [lastDocId, setLastDocId] = useState(null)
   const [error, setError] = useState(null)
+  const [loadMoreError, setLoadMoreError] = useState(false)
+
   const fetchingRef = useRef(false)
+  const sentinelRef = useRef(null)
 
   const categories = [
     { id: 'all', name: 'All Products', icon: '🍽️' },
@@ -73,16 +79,24 @@ function Products() {
     { id: 'festival', name: 'Festival Specials', icon: '🎉' }
   ]
 
-  const loadProducts = useCallback(async () => {
-    // Prevent concurrent fetches (e.g. rapid retry button clicks)
+  // Load the first page for the given category
+  const loadInitial = useCallback(async (category) => {
     if (fetchingRef.current) return
     fetchingRef.current = true
+    setLoading(true)
+    setError(null)
+    setProducts([])
+    setLastDocId(null)
+    setHasMore(true)
+    setLoadMoreError(false)
     try {
-      setLoading(true)
-      setError(null)
-      const data = await getProducts()
-      setProducts(data)
-      setFilteredProducts(data)
+      const data = await getProductsPaginated({
+        limit: PAGE_SIZE,
+        category: category !== 'all' ? category : null
+      })
+      setProducts(data.products)
+      setLastDocId(data.lastDocId)
+      setHasMore(data.hasMore)
     } catch (err) {
       setError(err.message || 'Failed to load products. Please try again.')
     } finally {
@@ -91,17 +105,52 @@ function Products() {
     }
   }, [])
 
-  useEffect(() => {
-    loadProducts()
-  }, [loadProducts])
-
-  useEffect(() => {
-    if (selectedCategory === 'all') {
-      setFilteredProducts(products)
-    } else {
-      setFilteredProducts(products.filter(p => p.category === selectedCategory))
+  // Load the next page (triggered by infinite scroll)
+  const loadMore = useCallback(async () => {
+    if (fetchingRef.current || !hasMore) return
+    fetchingRef.current = true
+    setLoadingMore(true)
+    setLoadMoreError(false)
+    try {
+      const data = await getProductsPaginated({
+        limit: PAGE_SIZE,
+        lastDocId,
+        category: selectedCategory !== 'all' ? selectedCategory : null
+      })
+      setProducts(prev => [...prev, ...data.products])
+      setLastDocId(data.lastDocId)
+      setHasMore(data.hasMore)
+    } catch (err) {
+      // Keep existing products visible and let the user retry
+      setLoadMoreError(true)
+    } finally {
+      setLoadingMore(false)
+      fetchingRef.current = false
     }
-  }, [selectedCategory, products])
+  }, [hasMore, lastDocId, selectedCategory])
+
+  // Reload whenever the selected category changes
+  useEffect(() => {
+    loadInitial(selectedCategory)
+  }, [selectedCategory, loadInitial])
+
+  // Intersection Observer – fires loadMore when sentinel enters the viewport
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [hasMore, loadingMore, loading, loadMore])
 
   return (
     <div className="products-page">
@@ -132,7 +181,7 @@ function Products() {
         {error ? (
           <div className="error-state">
             <p>⚠️ {error}</p>
-            <button className="btn btn-primary" onClick={loadProducts}>Try Again</button>
+            <button className="btn btn-primary" onClick={() => loadInitial(selectedCategory)}>Try Again</button>
           </div>
         ) : loading ? (
           <section className="products-section">
@@ -145,20 +194,37 @@ function Products() {
         ) : (
           <section className="products-section">
             <div className="products-grid">
-              {filteredProducts.map(product => (
+              {products.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}
+              {loadingMore && Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                <ProductSkeleton key={`more-${i}`} />
+              ))}
             </div>
-          </section>
-        )}
 
-        {filteredProducts.length === 0 && !loading && !error && (
-          <div className="no-products">
-            <p>No products found in this category.</p>
-            <button className="btn btn-primary" onClick={() => setSelectedCategory('all')}>
-              View All Products
-            </button>
-          </div>
+            {/* Sentinel element watched by the Intersection Observer */}
+            <div ref={sentinelRef} className="scroll-sentinel" aria-hidden="true" />
+
+            {loadMoreError && (
+              <div className="load-more-error">
+                <p>Failed to load more products.</p>
+                <button className="btn btn-primary" onClick={loadMore}>Retry</button>
+              </div>
+            )}
+
+            {!hasMore && products.length > 0 && (
+              <p className="end-of-list">You've seen all products 🎉</p>
+            )}
+
+            {products.length === 0 && !loadingMore && !loading && (
+              <div className="no-products">
+                <p>No products found in this category.</p>
+                <button className="btn btn-primary" onClick={() => setSelectedCategory('all')}>
+                  View All Products
+                </button>
+              </div>
+            )}
+          </section>
         )}
       </div>
     </div>
@@ -166,3 +232,4 @@ function Products() {
 }
 
 export default Products
+

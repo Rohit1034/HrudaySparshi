@@ -367,3 +367,30 @@
   color: var(--danger-color);
   margin-bottom: 1.5rem;
 }
+
+/* Infinite scroll sentinel (invisible trigger element) */
+.scroll-sentinel {
+  height: 1px;
+  margin-top: 2rem;
+}
+
+/* End-of-list message */
+.end-of-list {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--gray-mid);
+  font-size: 0.9375rem;
+}
+
+/* Load-more error notice */
+.load-more-error {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 1rem;
+}
+
+.load-more-error p {
+  color: var(--danger-color);
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+}

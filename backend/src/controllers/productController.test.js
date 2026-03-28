@@ -1,15 +1,33 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals'
 
 // ── Firebase mock ─────────────────────────────────────────────────────────────
-const mockDocGet    = jest.fn()
-const mockDocSet    = jest.fn()
-const mockDocUpdate = jest.fn()
-const mockDocDelete = jest.fn()
-const mockDocRef    = jest.fn(() => ({ get: mockDocGet, set: mockDocSet, update: mockDocUpdate, delete: mockDocDelete }))
-const mockQueryGet  = jest.fn()
-const mockWhere     = jest.fn()
-const mockCollection = jest.fn(() => ({ doc: mockDocRef, where: mockWhere, get: mockQueryGet }))
-mockWhere.mockReturnValue({ get: mockQueryGet })
+const mockDocGet     = jest.fn()
+const mockDocSet     = jest.fn()
+const mockDocUpdate  = jest.fn()
+const mockDocDelete  = jest.fn()
+const mockDocRef     = jest.fn(() => ({ get: mockDocGet, set: mockDocSet, update: mockDocUpdate, delete: mockDocDelete }))
+const mockQueryGet   = jest.fn()
+const mockWhere      = jest.fn()
+const mockOrderBy    = jest.fn()
+const mockLimit      = jest.fn()
+const mockStartAfter = jest.fn()
+const mockCollection = jest.fn()
+
+// Chainable query builder: every chain method returns the same `queryChain`
+// object so that any combination of .where().orderBy().limit().startAfter()
+// ultimately resolves to mockQueryGet when .get() is called.
+const queryChain = {
+  where: mockWhere,
+  orderBy: mockOrderBy,
+  limit: mockLimit,
+  startAfter: mockStartAfter,
+  get: mockQueryGet
+}
+mockWhere.mockReturnValue(queryChain)
+mockOrderBy.mockReturnValue(queryChain)
+mockLimit.mockReturnValue(queryChain)
+mockStartAfter.mockReturnValue(queryChain)
+mockCollection.mockReturnValue({ doc: mockDocRef, ...queryChain })
 
 jest.unstable_mockModule('../config/firebase.js', () => ({ db: { collection: mockCollection } }))
 jest.unstable_mockModule('uuid', () => ({ v4: () => 'test-uuid-1234' }))
@@ -48,9 +66,12 @@ function makeSnapshot(docs) {
 
 // Re-wires mock return values (called after jest.resetAllMocks() drops them)
 function rewireMocks() {
-  mockCollection.mockReturnValue({ doc: mockDocRef, where: mockWhere, get: mockQueryGet })
+  mockCollection.mockReturnValue({ doc: mockDocRef, ...queryChain })
   mockDocRef.mockReturnValue({ get: mockDocGet, set: mockDocSet, update: mockDocUpdate, delete: mockDocDelete })
-  mockWhere.mockReturnValue({ get: mockQueryGet })
+  mockWhere.mockReturnValue(queryChain)
+  mockOrderBy.mockReturnValue(queryChain)
+  mockLimit.mockReturnValue(queryChain)
+  mockStartAfter.mockReturnValue(queryChain)
 }
 
 // Bust the in-module cache by triggering a delete (which calls productCache.del)
@@ -256,5 +277,82 @@ describe('productController – deleteProduct', () => {
     await getProducts(makeReq(), makeRes())
 
     expect(mockQueryGet.mock.calls.length).toBe(callsBefore + 1)
+  })
+})
+
+describe('productController – getProducts (paginated)', () => {
+  beforeEach(async () => {
+    jest.resetAllMocks()
+    rewireMocks()
+    await bustCache()
+  })
+
+  it('returns paginated products wrapped in { products, hasMore, lastDocId }', async () => {
+    mockQueryGet.mockResolvedValue(makeSnapshot(SAMPLE_PRODUCTS))
+
+    const res = makeRes()
+    await getProducts(makeReq({ query: { limit: '8' } }), res)
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        products: expect.arrayContaining([
+          expect.objectContaining({ id: 'p1', name: 'Chakli' }),
+          expect.objectContaining({ id: 'p2', name: 'Laddu' })
+        ]),
+        hasMore: false,
+        lastDocId: 'p2'
+      })
+    )
+  })
+
+  it('sets hasMore=true when the number of returned docs equals the limit', async () => {
+    const fullPage = Array.from({ length: 3 }, (_, i) => ({
+      id: `p${i}`, name: `Product ${i}`, category: 'snacks', price: 100
+    }))
+    mockQueryGet.mockResolvedValue(makeSnapshot(fullPage))
+
+    const res = makeRes()
+    await getProducts(makeReq({ query: { limit: '3' } }), res)
+
+    const call = res.json.mock.calls[0][0]
+    expect(call.hasMore).toBe(true)
+    expect(call.products).toHaveLength(3)
+    expect(call.lastDocId).toBe('p2')
+  })
+
+  it('fetches cursor document and passes it to startAfter when lastDocId is given', async () => {
+    mockDocGet.mockResolvedValue({ exists: true, data: () => ({ name: 'cursor' }) })
+    mockQueryGet.mockResolvedValue(makeSnapshot([SAMPLE_PRODUCTS[1]]))
+
+    const res = makeRes()
+    await getProducts(makeReq({ query: { limit: '8', lastDocId: 'p1' } }), res)
+
+    // The cursor doc must be fetched via doc().get()
+    expect(mockDocGet).toHaveBeenCalled()
+    // startAfter should have been called with the cursor document
+    expect(mockStartAfter).toHaveBeenCalled()
+    const call = res.json.mock.calls[0][0]
+    expect(call.products).toHaveLength(1)
+  })
+
+  it('filters by category in paginated mode', async () => {
+    mockQueryGet.mockResolvedValue(makeSnapshot([SAMPLE_PRODUCTS[0]]))
+
+    const res = makeRes()
+    await getProducts(makeReq({ query: { limit: '8', category: 'snacks' } }), res)
+
+    expect(mockWhere).toHaveBeenCalledWith('category', '==', 'snacks')
+    const call = res.json.mock.calls[0][0]
+    expect(call.products[0].category).toBe('snacks')
+  })
+
+  it('returns 500 when Firestore throws in paginated mode', async () => {
+    mockQueryGet.mockRejectedValue(new Error('Firestore paginated error'))
+
+    const res = makeRes()
+    await getProducts(makeReq({ query: { limit: '8' } }), res)
+
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.json).toHaveBeenCalledWith({ error: 'Firestore paginated error' })
   })
 })

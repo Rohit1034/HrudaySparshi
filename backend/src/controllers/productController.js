@@ -7,9 +7,40 @@ const productCache = createCache(5 * 60 * 1000) // 5 minutes
 
 export const getProducts = async (req, res) => {
   try {
-    const { category } = req.query
+    const { category, limit: limitStr, lastDocId } = req.query
 
-    // Only cache full product list (no category filter)
+    // ── Paginated mode: when a limit param is supplied ──────────────────────
+    if (limitStr !== undefined) {
+      const limit = Math.min(Math.max(parseInt(limitStr, 10) || 8, 1), 100)
+
+      let baseQuery = db.collection('products')
+      if (category) {
+        baseQuery = baseQuery.where('category', '==', category)
+      }
+      const orderedQuery = baseQuery.orderBy('createdAt', 'desc')
+      let query = orderedQuery.limit(limit)
+
+      if (lastDocId) {
+        const cursorDoc = await db.collection('products').doc(lastDocId).get()
+        if (cursorDoc.exists) {
+          query = orderedQuery.startAfter(cursorDoc).limit(limit)
+        }
+      }
+
+      const snapshot = await query.get()
+      const products = []
+      snapshot.forEach(doc => {
+        products.push({ id: doc.id, ...doc.data() })
+      })
+
+      return res.json({
+        products,
+        hasMore: products.length === limit,
+        lastDocId: products.length > 0 ? products[products.length - 1].id : null
+      })
+    }
+
+    // ── Legacy mode: return all products (backward-compatible) ───────────────
     if (!category) {
       const cached = productCache.get(PRODUCTS_CACHE_KEY)
       if (cached) {
