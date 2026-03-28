@@ -7,6 +7,14 @@ export const getProducts = async (category = null) => {
   return response.data
 }
 
+export const getProductsPaginated = async ({ limit = 8, lastDocId = null, category = null } = {}) => {
+  const params = { limit }
+  if (lastDocId) params.lastDocId = lastDocId
+  if (category) params.category = category
+  const response = await api.get('/products', { params })
+  return response.data // { products, hasMore, lastDocId }
+}
+
 export const getProductById = async (id) => {
   const response = await api.get(`/products/${id}`)
   return response.data
